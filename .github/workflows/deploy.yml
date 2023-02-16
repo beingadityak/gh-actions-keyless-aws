@@ -10,7 +10,6 @@ on:
       - ".github/workflows/deploy.yml"
   pull_request:
 
-
 permissions:
   id-token: write
   contents: read
