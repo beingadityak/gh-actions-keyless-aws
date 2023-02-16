@@ -1,0 +1,9 @@
+{
+    "yaml.schemas": {
+        "file:///Users/aditya/Library/Application%20Support/Code/User/globalStorage/amazonwebservices.aws-toolkit-vscode/sam.schema.json": [
+            "Library/Mobile Documents/com~apple~CloudDocs/Documents/boilerplate/template.yaml",
+            "Documents/boilerplate/template.yaml"
+        ],
+        "https://json.schemastore.org/github-workflow.json": "file:///Users/aditya/code_work/gh-actions-keyless-aws/.github/workflows/deploy.yml"
+    }
+}

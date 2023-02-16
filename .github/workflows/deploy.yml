@@ -1,0 +1,52 @@
+name: Deploy Static Website to S3 Bucket
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - "static/**"
+      - "./test.sh"
+      - ".github/workflows/deploy.yml"
+  pull_request:
+
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  deploy-website:
+    name: Test and Deploy static site to S3 bucket
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      
+      - name: Perform tests
+        id: test
+        run: |
+          bash ./test.sh
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-region: ap-south-1
+          role-to-assume: ${{ secrets.GH_ACTIONS_AWS_ROLE }}
+          role-session-name: OIDCGithubActionsSession
+      
+      - name: Sync S3 Directory
+        id: sync
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          aws s3 sync ./static s3://${{ secrets.S3_WEBSITE_BUCKET }}/
+      
+      - name: Invalidate CloudFront Cache
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: aws cloudfront create-invalidation --distribution-id ${{ secrets.S3_WEBSITE_CLOUDFRONT_DISTRIBUTION }} --paths "/*"
